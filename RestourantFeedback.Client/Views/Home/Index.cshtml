@@ -2,8 +2,13 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div>
+<div style="display: inline-block; float: none" class="form-signin">
+
+    <div id="error" style="display:none" class="alert alert-danger alert-dismissible fade show" role="alert">
+    </div>
+
     <form id="feedback-form">
+
         <div class="form-group">
             <label for="username">Username:</label>
             <input type="text" name="username" class="form-control" id="username" placeholder="Enter username">
@@ -16,6 +21,7 @@
             <label for="message">Message:</label>
             <textarea class="form-control" id="message" rows="5" name="message" placeholder="Enter message"></textarea>
         </div>
+   
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
@@ -37,10 +43,21 @@
                 data: JSON.stringify(jsonData),
                 contentType: "application/json",
                 success: function (response) {
+                    $('#error').hide();
                     console.log(response);
                 },
                 error: function (xhr, status, error) {
-                    console.error(error)
+                    $('#error').show()
+                    if(!xhr.responseJSON){
+                        $('#error').text(xhr.responseText);
+                    }
+                    var errorMessages = Object.values(xhr.responseJSON.errors)
+                    .flatMap(function(errorArray) {
+                        return errorArray;
+                    })
+                    .join(', ');
+
+                    $('#error').text(errorMessages)
                 }
             })
         })

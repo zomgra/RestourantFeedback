@@ -1,4 +1,5 @@
 using RestourantFeedback.Application;
+using RestourantFeedback.Application.Commons.Middlewares;
 using RestourantFeedback.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,8 @@ builder.Services.AddCors(c =>
         .WithOrigins(builder.Configuration.GetValue<string>("ClientUrl"));
     });
 });
+
+builder.Services.AddMemoryCache();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -35,6 +38,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors();
+
+app.UseMiddleware<RequestRateLimitMiddleware>(1, TimeSpan.FromMinutes(1));
 app.UseAuthorization();
 
 app.MapControllers();
